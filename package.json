@@ -1,0 +1,38 @@
+{
+  "name": "react-native-mapzen-places-autocomplete",
+  "version": "1.0.0",
+  "description": "Customizable Mapzen / Mapbox autocomplete component for iOS and Android React-Native apps",
+  "main": "MapzenAutocomplete.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/java99/react-native-mapzen-places-autocomplete.git"
+  },
+  "keywords": [
+    "mapzen",
+    "places",
+    "autocomplete",
+    "react-native",
+    "react-component",
+    "mapbox"
+  ],
+  "author": "java99",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/java99/react-native-mapzen-places-autocomplete/issues"
+  },
+  "homepage": "https://github.com/java99/react-native-mapzen-places-autocomplete#readme",
+  "dependencies": {
+    "qs": "^5.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^1.9.0",
+    "eslint-config-airbnb": "^1.0.0",
+    "eslint-plugin-react": "^3.9.0"
+  },
+  "peerDependencies": {
+    "react-native": ">= 0.28"
+  }
+}
