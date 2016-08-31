@@ -1,6 +1,8 @@
 # react-native-mapzen-places-autocomplete
 Customizable Mapzen / Mapbox autocomplete component for iOS and Android React-Native apps
 
+npm install --save react-native-mapzen-places-autocomplete
+
 Copyright (c) 2016 java99
 
 ---------------------------------------------------------------------------------

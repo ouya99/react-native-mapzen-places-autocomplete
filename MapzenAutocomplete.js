@@ -438,7 +438,7 @@ const MapzenPlacesAutocomplete = React.createClass({
           // console.warn("mapzen places autocomplete: request could not be completed or has been aborted");
         }
       };
-      request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=' +encodeURIComponent(text) ));
+      request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=' +encodeURIComponent(text) );
       request.send();
     } else {
       this._results = [];
