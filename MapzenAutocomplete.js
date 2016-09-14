@@ -206,8 +206,8 @@ const MapzenPlacesAutocomplete = React.createClass({
   },
 
   _enableRowLoader(rowData) {
-
     let rows = this.buildRowsFromResults(this._results);
+    console.log(rows);
     for (let i = 0; i < rows.length; i++) {
       if ((rows[i].place_id === rowData.place_id) || (rows[i].isCurrentLocation === true && rowData.isCurrentLocation === true)) {
         rows[i].isLoading = true;
@@ -231,52 +231,54 @@ const MapzenPlacesAutocomplete = React.createClass({
     }
   },
   _onPress(rowData) {
-    if (rowData.isPredefinedPlace !== true && this.props.fetchDetails === true) {
-      if (rowData.isLoading === true) {
-        // already requesting
-        return;
-      }
-
-      this._abortRequests();
-
-      // display loader
-      this._enableRowLoader(rowData);
-
-      // fetch details
-      const request = new XMLHttpRequest();
-      this._requests.push(request);
-      request.timeout = this.props.timeout;
-      request.ontimeout = this.props.onTimeout;
-      request.onreadystatechange = () => {
-        if (request.readyState !== 4) {
-          return;
-        }
-        if (request.status === 200) {
-          const responseJSON = JSON.parse(request.responseText);
-          if (responseJSON.status === 'OK') {
-            if (this.isMounted()) {
-              const details = responseJSON.result;
-              this._disableRowLoaders();
-              this._onBlur();
-
-              this.setState({
-                text: rowData.description,
-              });
-
-              delete rowData.isLoading;
-              this.props.onPress(rowData, details);
-            }
-          } else {
-            this._disableRowLoaders();
-            console.warn('mapzen places autocomplete: ' + responseJSON.status);
-          }
-        } else {
-          this._disableRowLoaders();
-          console.warn('mapzen places autocomplete: request could not be completed or has been aborted');
-        }
-      };
-      request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=Am%20Sulzbogen%2020');
-      request.send();
+    // console.log(rowData.isPredefinedPlace);
+    // if (rowData.isPredefinedPlace !== true && this.props.fetchDetails === true) {
+    if (false) {
+      // if (rowData.isLoading === true) {
+      //   // already requesting
+      //   return;
+      // }
+      //
+      // this._abortRequests();
+      //
+      // // display loader
+      // this._enableRowLoader(rowData);
+      //
+      // // fetch details
+      // const request = new XMLHttpRequest();
+      // this._requests.push(request);
+      // request.timeout = this.props.timeout;
+      // request.ontimeout = this.props.onTimeout;
+      // request.onreadystatechange = () => {
+      //   if (request.readyState !== 4) {
+      //     return;
+      //   }
+      //   if (request.status === 200) {
+      //     const responseJSON = JSON.parse(request.responseText);
+      //     if (responseJSON.status === 'OK') {
+      //       if (this.isMounted()) {
+      //         const details = responseJSON.result;
+      //         this._disableRowLoaders();
+      //         this._onBlur();
+      //
+      //         this.setState({
+      //           text: rowData.properties.label,
+      //         });
+      //
+      //         delete rowData.isLoading;
+      //         this.props.onPress(rowData, details);
+      //       }
+      //     } else {
+      //       this._disableRowLoaders();
+      //       console.warn('mapzen places autocomplete: ' + responseJSON.status);
+      //     }
+      //   } else {
+      //     this._disableRowLoaders();
+      //     console.warn('mapzen places autocomplete: request could not be completed or has been aborted');
+      //   }
+      // };
+      // request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=Am%20Sulzbogen%2020');
+      // request.send();
     } else if (rowData.isCurrentLocation === true) {
 
       // display loader
@@ -284,7 +286,7 @@ const MapzenPlacesAutocomplete = React.createClass({
 
 
       this.setState({
-        text: rowData.description,
+        text: rowData.properties.label,
       });
       this.triggerBlur(); // hide keyboard but not the results
 
@@ -294,7 +296,7 @@ const MapzenPlacesAutocomplete = React.createClass({
 
     } else {
       this.setState({
-        text: rowData.description,
+        text: rowData.properties.label,
       });
 
       this._onBlur();
@@ -315,9 +317,9 @@ const MapzenPlacesAutocomplete = React.createClass({
       return rowData;
     }
     for (let i = 0; i < this.props.predefinedPlaces.length; i++) {
-      if (this.props.predefinedPlaces[i].description === rowData.description) {
+      // if (this.props.predefinedPlaces[i].properties.label === rowData.properties.name) {
         return this.props.predefinedPlaces[i];
-      }
+      // }
     }
     return rowData;
   },
@@ -422,12 +424,103 @@ const MapzenPlacesAutocomplete = React.createClass({
           return;
         }
         if (request.status === 200) {
+
+        const  responseJSdON = {
+  "status": "OK",
+  "predictions" : [
+      {
+         "description" : "Paris, France",
+         "id" : "691b237b0322f28988f3ce03e321ff72a12167fd",
+         "matched_substrings" : [
+            {
+               "length" : 5,
+               "offset" : 0
+            }
+         ],
+         "place_id" : "ChIJD7fiBh9u5kcRYJSMaMOCCwQ",
+         "reference" : "CjQlAAAA_KB6EEceSTfkteSSF6U0pvumHCoLUboRcDlAH05N1pZJLmOQbYmboEi0SwXBSoI2EhAhj249tFDCVh4R-PXZkPK8GhTBmp_6_lWljaf1joVs1SH2ttB_tw",
+         "terms" : [
+            {
+               "offset" : 0,
+               "value" : "Paris"
+            },
+            {
+               "offset" : 7,
+               "value" : "France"
+            }
+         ],
+         "types" : [ "locality", "political", "geocode" ]
+      },
+      {
+         "description" : "Paris Avenue, Earlwood, New South Wales, Australia",
+         "id" : "359a75f8beff14b1c94f3d42c2aabfac2afbabad",
+         "matched_substrings" : [
+            {
+               "length" : 5,
+               "offset" : 0
+            }
+         ],
+         "place_id" : "ChIJrU3KAHG6EmsR5Uwfrk7azrI",
+         "reference" : "CkQ2AAAARbzLE-tsSQPgwv8JKBaVtbjY48kInQo9tny0k07FOYb3Z_z_yDTFhQB_Ehpu-IKhvj8Msdb1rJlX7xMr9kfOVRIQVuL4tOtx9L7U8pC0Zx5bLBoUTFbw9R2lTn_EuBayhDvugt8T0Oo",
+         "terms" : [
+            {
+               "offset" : 0,
+               "value" : "Paris Avenue"
+            },
+            {
+               "offset" : 14,
+               "value" : "Earlwood"
+            },
+            {
+               "offset" : 24,
+               "value" : "New South Wales"
+            },
+            {
+               "offset" : 41,
+               "value" : "Australia"
+            }
+         ],
+         "types" : [ "route", "geocode" ]
+      },
+      {
+         "description" : "Paris Street, Carlton, New South Wales, Australia",
+         "id" : "bee539812eeda477dad282bcc8310758fb31d64d",
+         "matched_substrings" : [
+            {
+               "length" : 5,
+               "offset" : 0
+            }
+         ],
+         "place_id" : "ChIJCfeffMi5EmsRp7ykjcnb3VY",
+         "reference" : "CkQ1AAAAAERlxMXkaNPLDxUJFLm4xkzX_h8I49HvGPvmtZjlYSVWp9yUhQSwfsdveHV0yhzYki3nguTBTVX2NzmJDukq9RIQNcoFTuz642b4LIzmLgcr5RoUrZhuNqnFHegHsAjtoUUjmhy4_rA",
+         "terms" : [
+            {
+               "offset" : 0,
+               "value" : "Paris Street"
+            },
+            {
+               "offset" : 14,
+               "value" : "Carlton"
+            },
+            {
+               "offset" : 23,
+               "value" : "New South Wales"
+            },
+            {
+               "offset" : 40,
+               "value" : "Australia"
+            }
+         ],
+         "types" : [ "route", "geocode" ]
+      }]};
+
           const responseJSON = JSON.parse(request.responseText);
-          if (typeof responseJSON.predictions !== 'undefined') {
+          // console.log(responseJSON.features[0].properties);
+          if (typeof responseJSON.features !== 'undefined') {
             if (this.isMounted()) {
-              this._results = responseJSON.predictions;
+              this._results = responseJSON.geocoding.features;
               this.setState({
-                dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults(responseJSON.predictions)),
+                dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults(responseJSON.features)),
               });
             }
           }
@@ -478,7 +571,7 @@ const MapzenPlacesAutocomplete = React.createClass({
   },
 
   _renderRow(rowData = {}) {
-    rowData.description = rowData.description || rowData.formatted_address || rowData.name;
+    // rowData.properties.name = rowData.properties.name || rowData.formatted_address || rowData.properties.region;
 
     return (
       <TouchableHighlight
@@ -493,7 +586,7 @@ const MapzenPlacesAutocomplete = React.createClass({
               style={[{flex: 1}, defaultStyles.description, this.props.styles.description, rowData.isPredefinedPlace ? this.props.styles.predefinedPlacesDescription : {}]}
               numberOfLines={1}
             >
-              {rowData.description}
+              {rowData.properties.label}
             </Text>
             {this._renderLoader(rowData)}
           </View>
@@ -583,3 +676,4 @@ const create = function create(options = {}) {
 
 
 module.exports = {MapzenPlacesAutocomplete, create};
+
