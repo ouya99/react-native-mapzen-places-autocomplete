@@ -147,6 +147,7 @@ const MapzenPlacesAutocomplete = React.createClass({
       res = [...this.props.predefinedPlaces];
       if (this.props.currentLocation === true) {
         res.unshift({
+          properties: {label: "Current location"},
           description: this.props.currentLocationLabel,
           isCurrentLocation: true,
         });
@@ -207,7 +208,7 @@ const MapzenPlacesAutocomplete = React.createClass({
 
   _enableRowLoader(rowData) {
     let rows = this.buildRowsFromResults(this._results);
-    console.log(rows);
+    // console.log(rows);
     for (let i = 0; i < rows.length; i++) {
       if ((rows[i].place_id === rowData.place_id) || (rows[i].isCurrentLocation === true && rowData.isCurrentLocation === true)) {
         rows[i].isLoading = true;
@@ -233,6 +234,7 @@ const MapzenPlacesAutocomplete = React.createClass({
   _onPress(rowData) {
     // console.log(rowData.isPredefinedPlace);
     // if (rowData.isPredefinedPlace !== true && this.props.fetchDetails === true) {
+    this.props.onPress(rowData, "MYTEST");
     if (false) {
       // if (rowData.isLoading === true) {
       //   // already requesting
@@ -572,7 +574,7 @@ const MapzenPlacesAutocomplete = React.createClass({
 
   _renderRow(rowData = {}) {
     // rowData.properties.name = rowData.properties.name || rowData.formatted_address || rowData.properties.region;
-
+    // console.log(rowData);
     return (
       <TouchableHighlight
         onPress={() =>
@@ -607,6 +609,7 @@ const MapzenPlacesAutocomplete = React.createClass({
 
   _getListView() {
     if ((this.state.text !== '' || this.props.predefinedPlaces.length || this.props.currentLocation === true) && this.state.listViewDisplayed === true) {
+      // console.log(this.state.dataSource);
       return (
         <ListView
           keyboardShouldPersistTaps={true}
