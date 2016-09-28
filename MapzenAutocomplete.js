@@ -193,16 +193,54 @@ const MapzenPlacesAutocomplete = React.createClass({
     if (this.refs.textInput) this.refs.textInput.blur();
   },
 
-  getCurrentLocation() {
+getCurrentLocation() {
+  var self = this;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          self._requestNearby(position.coords.latitude, position.coords.longitude);
+
+          alert("current position is : LAT : " + position.coords.latitude + " / LNG : " + position.coords.longitude);
+        },
+        (error) => alert(error.message),
+        {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000}
+      );
+  };
+},
+
+  // getCurrentLocation() {
+    // navigator.geolocation.getCurrentPosition(
+    //   (position) => {
+    //     // this._requestNearby(position.coords.latitude, position.coords.longitude);
+    //   },
+    //   (error) => {
+    //     this._disableRowLoaders();
+    //     if (error.code <= 2) { // timeout
+    //       alert("you have no gps or other problem - high accuracy");
+    //     }
+    //     if (error.code == 3) { // timeout
+    //       alert("search timed out");
+    //       this.getLowAccuracyLocation();
+    //     }
+    //   },
+    //   {enableHighAccuracy: true, timeout: 5000, maximumAge: 1000}
+    // );
+  // },
+
+  getLowAccuracyLocation() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        this._requestNearby(position.coords.latitude, position.coords.longitude);
       },
       (error) => {
         this._disableRowLoaders();
-        alert(error.message);
+        if (error.code <= 2) { // timeout
+          alert("you have no gps or other problem - low accuracy");
+        }
+        if (error.code == 3) { // timeout
+          alert("search timed out with low accuracy");
+        }
       },
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 1000}
     );
   },
 
@@ -360,19 +398,15 @@ const MapzenPlacesAutocomplete = React.createClass({
         if (request.status === 200) {
           const responseJSON = JSON.parse(request.responseText);
 
+          console.log(responseJSON);
+          console.log("HÖÖ");
           this._disableRowLoaders();
-
-          if (typeof responseJSON.results !== 'undefined') {
+          // console.log(responseJSON.features[0].properties);
+          if (typeof responseJSON.features !== 'undefined') {
             if (this.isMounted()) {
-              var results = [];
-              if (this.props.nearbyPlacesAPI === 'MapzenReverseGeocoding') {
-                results = this._filterResultsByTypes(responseJSON, this.props.filterReverseGeocodingByTypes);
-              } else {
-                results = responseJSON.results;
-              }
-
+              this._results = responseJSON.geocoding.features;
               this.setState({
-                dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults(results)),
+                dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults(responseJSON.features)),
               });
             }
           }
@@ -384,24 +418,10 @@ const MapzenPlacesAutocomplete = React.createClass({
         }
       };
 
-      // let url = '';
-      // if (this.props.nearbyPlacesAPI === 'MapzenReverseGeocoding') {
-      //   // your key must be allowed to use Mapzen Maps Geocoding API
-      //   url = 'https://maps.googleapis.com/maps/api/geocode/json?' + Qs.stringify({
-      //     latlng: latitude+','+longitude,
-      //     key: this.props.query.key,
-      //     ...this.props.GoogleReverseGeocodingQuery,
-      //   });
-      // } else {
-      //   url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?' + Qs.stringify({
-      //     location: latitude+','+longitude,
-      //     key: this.props.query.key,
-      //     ...this.props.GooglePlacesSearchQuery,
-      //   });
-      // }
-
-      // CHANGE
-      request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=Am%20Sulzbogen%2020');
+      // https://mapzen.com/documentation/search/reverse/#distance-confidence-scores-for-the-results
+      var mapzenSearch = "https://search.mapzen.com/v1/reverse?point.lat="+ latitude + "&point.lon=" + longitude;
+      // console.log(mapzenSearch);
+      request.open('GET', mapzenSearch);
       request.send();
     } else {
       this._results = [];
@@ -426,96 +446,6 @@ const MapzenPlacesAutocomplete = React.createClass({
           return;
         }
         if (request.status === 200) {
-
-        const  responseJSdON = {
-  "status": "OK",
-  "predictions" : [
-      {
-         "description" : "Paris, France",
-         "id" : "691b237b0322f28988f3ce03e321ff72a12167fd",
-         "matched_substrings" : [
-            {
-               "length" : 5,
-               "offset" : 0
-            }
-         ],
-         "place_id" : "ChIJD7fiBh9u5kcRYJSMaMOCCwQ",
-         "reference" : "CjQlAAAA_KB6EEceSTfkteSSF6U0pvumHCoLUboRcDlAH05N1pZJLmOQbYmboEi0SwXBSoI2EhAhj249tFDCVh4R-PXZkPK8GhTBmp_6_lWljaf1joVs1SH2ttB_tw",
-         "terms" : [
-            {
-               "offset" : 0,
-               "value" : "Paris"
-            },
-            {
-               "offset" : 7,
-               "value" : "France"
-            }
-         ],
-         "types" : [ "locality", "political", "geocode" ]
-      },
-      {
-         "description" : "Paris Avenue, Earlwood, New South Wales, Australia",
-         "id" : "359a75f8beff14b1c94f3d42c2aabfac2afbabad",
-         "matched_substrings" : [
-            {
-               "length" : 5,
-               "offset" : 0
-            }
-         ],
-         "place_id" : "ChIJrU3KAHG6EmsR5Uwfrk7azrI",
-         "reference" : "CkQ2AAAARbzLE-tsSQPgwv8JKBaVtbjY48kInQo9tny0k07FOYb3Z_z_yDTFhQB_Ehpu-IKhvj8Msdb1rJlX7xMr9kfOVRIQVuL4tOtx9L7U8pC0Zx5bLBoUTFbw9R2lTn_EuBayhDvugt8T0Oo",
-         "terms" : [
-            {
-               "offset" : 0,
-               "value" : "Paris Avenue"
-            },
-            {
-               "offset" : 14,
-               "value" : "Earlwood"
-            },
-            {
-               "offset" : 24,
-               "value" : "New South Wales"
-            },
-            {
-               "offset" : 41,
-               "value" : "Australia"
-            }
-         ],
-         "types" : [ "route", "geocode" ]
-      },
-      {
-         "description" : "Paris Street, Carlton, New South Wales, Australia",
-         "id" : "bee539812eeda477dad282bcc8310758fb31d64d",
-         "matched_substrings" : [
-            {
-               "length" : 5,
-               "offset" : 0
-            }
-         ],
-         "place_id" : "ChIJCfeffMi5EmsRp7ykjcnb3VY",
-         "reference" : "CkQ1AAAAAERlxMXkaNPLDxUJFLm4xkzX_h8I49HvGPvmtZjlYSVWp9yUhQSwfsdveHV0yhzYki3nguTBTVX2NzmJDukq9RIQNcoFTuz642b4LIzmLgcr5RoUrZhuNqnFHegHsAjtoUUjmhy4_rA",
-         "terms" : [
-            {
-               "offset" : 0,
-               "value" : "Paris Street"
-            },
-            {
-               "offset" : 14,
-               "value" : "Carlton"
-            },
-            {
-               "offset" : 23,
-               "value" : "New South Wales"
-            },
-            {
-               "offset" : 40,
-               "value" : "Australia"
-            }
-         ],
-         "types" : [ "route", "geocode" ]
-      }]};
-
           const responseJSON = JSON.parse(request.responseText);
           // console.log(responseJSON.features[0].properties);
           if (typeof responseJSON.features !== 'undefined') {
