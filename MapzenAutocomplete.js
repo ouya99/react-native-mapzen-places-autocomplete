@@ -399,8 +399,6 @@ getCurrentLocation() {
         if (request.status === 200) {
           const responseJSON = JSON.parse(request.responseText);
 
-          console.log(responseJSON);
-          console.log("HÖÖ");
           this._disableRowLoaders();
           // console.log(responseJSON.features[0].properties);
           if (typeof responseJSON.features !== 'undefined') {
