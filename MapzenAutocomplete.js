@@ -83,7 +83,8 @@ const MapzenPlacesAutocomplete = React.createClass({
     nearbyPlacesAPI: React.PropTypes.string,
     filterReverseGeocodingByTypes: React.PropTypes.array,
     predefinedPlacesAlwaysVisible: React.PropTypes.bool,
-    enableEmptySections: React.PropTypes.bool
+    enableEmptySections: React.PropTypes.bool,
+    apiKey: React.PropTypes.string
   },
 
   getDefaultProps() {
@@ -317,7 +318,7 @@ getCurrentLocation() {
       //     console.warn('mapzen places autocomplete: request could not be completed or has been aborted');
       //   }
       // };
-      // request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=Am%20Sulzbogen%2020');
+      // request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-XXXXXX&focus.point.lat=48.1&focus.point.lon=11.4&text=Am%20Sulzbogen%2020');
       // request.send();
     } else if (rowData.isCurrentLocation === true) {
 
@@ -463,7 +464,8 @@ getCurrentLocation() {
           // console.warn("mapzen places autocomplete: request could not be completed or has been aborted");
         }
       };
-      request.open('GET', 'https://search.mapzen.com/v1/autocomplete?api_key=search-LVUGXaU&focus.point.lat=48.1&focus.point.lon=11.4&text=' +encodeURIComponent(text) );
+      var mapzenSearch = 'https://search.mapzen.com/v1/autocomplete?api_key=search-' + this.props.query.key + '&text=' +encodeURIComponent(text);
+      request.open('GET', mapzenSearch);
       request.send();
     } else {
       this._results = [];
